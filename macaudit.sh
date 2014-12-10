@@ -9,7 +9,7 @@ printf '' > $OUTPUT_FILE
 #==============#
 # Date of Scan #
 #==============#
-echo "Date:" $(date) | tee -a $OUTPUT_FILE
+echo "Date:" $(date +"%D @ %r") | tee -a $OUTPUT_FILE
 
 #===============#
 # Computer Name #
@@ -32,7 +32,7 @@ echo "Full Name:" $(finger `whoami` | awk -F: '{ print $3 }' | head -n1 | sed 's
 #===================#
 AUTOLOGON_USER=`defaults read /Library/Preferences/com.apple.loginwindow autoLoginUser 2>&1`
 	if [ $? -eq 0 ]; then
-		printf "Autologon: Enabled with user '%s'\n" $AUTOLOGON_USER | tee -a $OUTPUT_FILE
+		printf "Autologon: Enabled (with user '%s')\n" $AUTOLOGON_USER | tee -a $OUTPUT_FILE
 	else
 		echo "AutoLogon: Disbaled" | tee -a $OUTPUT_FILE
 	fi
@@ -47,11 +47,10 @@ else
 	echo "Screen Saver: Enabled" | tee -a $OUTPUT_FILE
 fi
 
-
 #======================#
 # Screen Saver Timeout #
 #======================#
-echo "Screen Saver Timeout:" $(defaults -currentHost read com.apple.screensaver idleTime -int) | tee -a $OUTPUT_FILE
+echo "Screen Saver Timeout: $(defaults -currentHost read com.apple.screensaver idleTime -int) Seconds" | tee -a $OUTPUT_FILE
 
 #=================================#
 # Screen Saver Password Protected #
