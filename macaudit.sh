@@ -66,42 +66,22 @@ echo "Ask For Password Delay:" $(defaults read com.apple.screensaver askForPassw
 #=========================#
 # Minimum Password Length #
 #=========================#
-# grep for minChars
-#	pwpolicy getglobalpolicy # Get global policies.
-#	pwpolicy getpolicy # Get policies for a user
-#	pwpolicy get-effective-policy # Gets the combination of global and user policies that apply to the user.
-#	pwpolicy getglobalhashtypes #Returns a list of password hashes stored on disk by default.
-#	pwpolicy gethashtypes # Returns a list of password hashes stored on disk for a user account.
+echo "Minimum Password Length:" $(pwpolicy get-effective-policy -u $USER | grep -o 'minChars=\d' | cut -d '=' -f2) | tee -a $OUTPUT_FILE
 
 #======================#
 # Maximum Password Age #
 #======================#
-# grep for maxMinutesUntilChangePassword
-#	pwpolicy getglobalpolicy # Get global policies.
-#	pwpolicy getpolicy # Get policies for a user
-#	pwpolicy get-effective-policy # Gets the combination of global and user policies that apply to the user.
-#	pwpolicy getglobalhashtypes #Returns a list of password hashes stored on disk by default.
-#	pwpolicy gethashtypes # Returns a list of password hashes stored on disk for a user account.
+echo "Maximum Password Age:" $(pwpolicy get-effective-policy -u $USER | grep -o 'maxMinutesUntilChangePassword=\d' | cut -d '=' -f2) | tee -a $OUTPUT_FILE
 
 #=================================#
 # Historical Passwords Remembered #
 #=================================#
-# grep for usingHistory
-#	pwpolicy getglobalpolicy # Get global policies.
-#	pwpolicy getpolicy # Get policies for a user
-#	pwpolicy get-effective-policy # Gets the combination of global and user policies that apply to the user.
-#	pwpolicy getglobalhashtypes #Returns a list of password hashes stored on disk by default.
-#	pwpolicy gethashtypes # Returns a list of password hashes stored on disk for a user account.
+echo "Historical Passwords Remembered:" $(pwpolicy get-effective-policy -u $USER | grep -o 'usingHistory=\d' | cut -d '=' -f2) | tee -a $OUTPUT_FILE
 
 #===================#
 # Lockout threshold #
 #===================#
-# grep for maxFailedLoginAttempts
-#	pwpolicy getglobalpolicy # Get global policies.
-#	pwpolicy getpolicy # Get policies for a user
-#	pwpolicy get-effective-policy # Gets the combination of global and user policies that apply to the user.
-#	pwpolicy getglobalhashtypes #Returns a list of password hashes stored on disk by default.
-#	pwpolicy gethashtypes # Returns a list of password hashes stored on disk for a user account.
+echo "Lockout threshold:" $(pwpolicy get-effective-policy -u $USER | grep -o 'maxFailedLoginAttempts=\d' | cut -d '=' -f2) | tee -a $OUTPUT_FILE
 
 #======================#
 # Hard Drive Encrypted #
