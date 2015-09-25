@@ -83,14 +83,14 @@ echo "Historical Passwords Remembered:" $(pwpolicy get-effective-policy -u $USER
 #===================#
 echo "Lockout threshold:" $(pwpolicy get-effective-policy -u $USER | grep -o 'maxFailedLoginAttempts=\d' | cut -d '=' -f2) | tee -a $OUTPUT_FILE
 
-#======================#
-# Hard Drive Encrypted #
-#======================#
+#=======================#
+# Hard Drive Encryption #
+#=======================#
 echo "HDD Encryption:" $(fdesetup status) | tee -a $OUTPUT_FILE
 
-#===============#
-# USB Encrypted #
-#===============#
+#================#
+# USB Encryption #
+#================#
 
 
 #============================#
