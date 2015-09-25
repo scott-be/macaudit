@@ -1,10 +1,19 @@
 #!/bin/sh
 
-OUTPUT_FILE=out.txt
+BASEDIR=$(dirname $0)
+cd $BASEDIR
 
+mkdir -p scans/`hostname -s` && cd $_
+OUTPUT_FILE=`hostname -s`-`date +"%s"`.txt
 printf '' > $OUTPUT_FILE
 
-# echo "" $() | tee -a $OUTPUT_FILE
+printf "Enter Site Name: "
+read SITENAME
+printf "Site Name: %s\n" "$SITENAME" >> $OUTPUT_FILE
+
+printf "Enter Description: "
+read DESCRIPTION
+printf "Description: %s\n" "$DESCRIPTION" >> $OUTPUT_FILE
 
 #==============#
 # Date of Scan #
@@ -111,9 +120,54 @@ echo "HDD Encryption:" $(fdesetup status) | tee -a $OUTPUT_FILE
 #===================================================#
 # Windows Critical Security Patches last applied on #
 #===================================================#
-
+system_profiler SPInstallHistoryDataType -xml > ${OUTPUT_FILE%%.*}-installed_software.spx
+system_profiler SPInstallHistoryDataType > ${OUTPUT_FILE%%.*}-installed_software.txt
 
 #==================#
 # Days since Patch #
 #==================#
 
+#=====================#
+# External IP Address #
+#=====================#
+echo "External IP Address:" $(curl -s icanhazip.com) | tee -a $OUTPUT_FILE
+
+#===============#
+# Get Interface #
+#===============#
+INTERFACE=`route get 8.8.8.8 | grep interface | cut -d ':' -f2 | tr -d ' '`
+echo "Network Interface:" $INTERFACE | tee -a $OUTPUT_FILE
+
+#=====================#
+# Internal IP Address #
+#=====================#
+echo "Internal IP Address: $(ipconfig getpacket $INTERFACE | grep yiaddr  | cut -d '=' -f2 | tr -d ' ')" | tee -a $OUTPUT_FILE
+
+#=============#
+# DHCP Server #
+#=============#
+echo "DHCP Server: $(ipconfig getpacket $INTERFACE | grep "server_identifier (ip)" | cut -d ':' -f2 | tr -d ' ')" | tee -a $OUTPUT_FILE
+
+#=============#
+# MAC Address #
+#=============#
+echo "MAC Address: $(ipconfig getpacket $INTERFACE | grep chaddr  | cut -d '=' -f2 | tr -d ' ')" | tee -a $OUTPUT_FILE
+
+#================#
+# Firewall State #
+#================#
+echo "Firewall:" $(/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate) | tee -a $OUTPUT_FILE
+
+#=================#
+# System Profiler #
+#=================#
+read -p "Run System Profiler? [y/N] " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+	system_profiler -detailLevel basic -xml > ${OUTPUT_FILE%%.*}.spx
+fi
+
+printf "\e[32;1mSaved file to: \e[35;1m%s\e[0m\n" "$OUTPUT_FILE"
+printf "Press [ENTER] to exit."
+read
